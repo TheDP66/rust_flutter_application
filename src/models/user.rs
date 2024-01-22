@@ -20,7 +20,7 @@ impl UserRole {
 }
 
 #[derive(Debug, Deserialize, sqlx::FromRow, sqlx::Type, Serialize, Clone)]
-pub struct User {
+pub struct UserModel {
     pub id: uuid::Uuid,
     pub name: String,
     pub email: String,

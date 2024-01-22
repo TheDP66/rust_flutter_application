@@ -24,6 +24,9 @@ install:
 	cargo add chrono --features serde
 	cargo add env_logger
 	cargo add dotenv
+	cargo add argon2
+	cargo add jsonwebtoken
+	cargo add validator -F derive
 	cargo add uuid --features "serde v4"
 	cargo add sqlx --features "runtime-async-std-native-tls mysql chrono uuid"
 	cargo install cargo-watch

@@ -49,4 +49,6 @@ pub async fn register(
     //     }
     //     Err(e) => Err(HttpResponse::server_error(e.to_string())),
     // }
+
+    Ok(())
 }

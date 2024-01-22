@@ -1,7 +1,9 @@
 use actix_web::web::Json;
 use sqlx::{mysql::MySqlQueryResult, MySqlPool};
 
-use crate::{repositories::auth_repository, schemas::auth::RegisterUserSchema};
+use crate::{
+    models::user::UserModel, repositories::auth_repository, schemas::auth::RegisterUserSchema,
+};
 
 #[derive(Debug)]
 pub struct AuthService {
@@ -13,10 +15,7 @@ impl AuthService {
         Self { pool }
     }
 
-    pub async fn register_user(
-        &self,
-        body: Json<RegisterUserSchema>,
-    ) -> Result<MySqlQueryResult, String> {
+    pub async fn register_user(&self, body: Json<RegisterUserSchema>) -> Result<UserModel, String> {
         let query_result = auth_repository::insert_user(&body, self.pool.clone()).await;
 
         Ok(query_result?)

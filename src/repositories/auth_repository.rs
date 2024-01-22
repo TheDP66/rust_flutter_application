@@ -1,20 +1,13 @@
-use actix_web::web::Json;
-use sqlx::MySqlPool;
+use async_trait::async_trait;
+use sqlx::{Pool, Postgres};
 
 use crate::{models::user::UserModel, schemas::auth::RegisterUserSchema};
 
 pub async fn insert_user(
     pool: MySqlPool,
-    body: Json<RegisterUserSchema>,
+    body: &Json<RegisterUserSchema>,
 ) -> Result<UserModel, String> {
-    let note = sqlx::query_as!(
-        UserModel,
-        r#"INSERT INTO users (name, email, password) VALUES ($1, $2, $3) 
-        RETURNING id, name, email, password, photo, verified, created_at, updated_at, role as "role: UserRole""#,
-        note_id
-    )
-    .fetch_one(&pool)
-    .await?;
+    let query_result = query_as!(r#""#);
 
-    Ok(note)
+    Ok(user)
 }

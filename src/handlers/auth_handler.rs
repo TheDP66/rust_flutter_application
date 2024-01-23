@@ -70,69 +70,69 @@ pub async fn login_user_handler(
 
     let user_service = UserService::new(data.db.clone());
 
-    let result = user_service
-        .get_user(None, None, Some(&body.email))
-        .await
-        .map_err(|e| {
-            HttpResponse::InternalServerError().json(serde_json::json!({
+    match user_service.get_user(None, None, Some(&body.email)).await {
+        Ok(result) => {
+            let user = match result {
+                Some(user) => user,
+                None => {
+                    return HttpResponse::InternalServerError().json(serde_json::json!({
+                        "status":"fail",
+                        "message":"User not found!",
+                    }))
+                }
+            };
+
+            let password_matches = password::compare(&body.password, &user.password)
+                .map_err(|_| {
+                    HttpResponse::Unauthorized().json(serde_json::json!({
+                        "status":"fail",
+                        "message":"Email or password is wrong",
+                    }))
+                })
+                .unwrap();
+
+            if password_matches {
+                let token = token::create_token(
+                    &user.id.to_string(),
+                    data.config.jwt_secret.as_bytes(),
+                    data.config.jwt_maxage,
+                )
+                .map_err(|e| {
+                    HttpResponse::InternalServerError().json(serde_json::json!({
+                        "status":"fail",
+                        "message": e.to_string(),
+                    }))
+                })
+                .unwrap();
+
+                let cookie = Cookie::build("token", token.to_owned())
+                    .path("/")
+                    .max_age(ActixWebDuration::new(60 * &data.config.jwt_maxage, 0))
+                    .http_only(true)
+                    .finish();
+
+                let token_response = serde_json::json!({
+                    "status": "success",
+                    "data" : serde_json::json!({
+                        "token": token,
+                    })
+                });
+
+                return HttpResponse::Ok()
+                    .cookie(cookie)
+                    .json(serde_json::json!(token_response));
+            } else {
+                return HttpResponse::InternalServerError().json(serde_json::json!({
+                    "status": "error",
+                    "message": "Email or password is wrong"
+                }));
+            }
+        }
+        Err(e) => {
+            return HttpResponse::InternalServerError().json(serde_json::json!({
                 "status":"fail",
                 "message": e.to_string(),
-            }))
-        });
-
-    let user = match result.unwrap() {
-        Some(data) => data,
-        None => {
-            return HttpResponse::BadRequest().json(serde_json::json!({
-                "status": "fail",
-                "message": "User not found"
             }))
         }
-    };
-
-    let password_matches = password::compare(&body.password, &user.password)
-        .map_err(|_| {
-            HttpResponse::Unauthorized().json(serde_json::json!({
-                "status":"fail",
-                "message":"Email or password is wrong",
-            }))
-        })
-        .unwrap();
-
-    if password_matches {
-        let token = token::create_token(
-            &user.id.to_string(),
-            data.config.jwt_secret.as_bytes(),
-            data.config.jwt_maxage,
-        )
-        .map_err(|e| {
-            HttpResponse::InternalServerError().json(serde_json::json!({
-                "status":"fail",
-                "message": e.to_string(),
-            }))
-        })
-        .unwrap();
-
-        let cookie = Cookie::build("token", token.to_owned())
-            .path("/")
-            .max_age(ActixWebDuration::new(60 * &data.config.jwt_maxage, 0))
-            .http_only(true)
-            .finish();
-
-        let token_response = serde_json::json!({
-            "status": "success",
-            "data" : serde_json::json!({
-                "token": token,
-            })
-        });
-
-        HttpResponse::Ok()
-            .cookie(cookie)
-            .json(serde_json::json!(token_response))
-    } else {
-        HttpResponse::InternalServerError().json(serde_json::json!({
-            "status": "error",
-            "message": "Email or password is wrong"
-        }))
     }
 }

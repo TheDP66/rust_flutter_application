@@ -1,7 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
-use rust_flutter_application::{utils::config::Config, AppState};
+use rust_flutter_application::{routes::auth::auth_config, utils::config::Config, AppState};
 use sqlx::mysql::MySqlPoolOptions;
 
 #[actix_web::main]
@@ -14,7 +14,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
 
     // initialize env variable
-    let config = Config::init();
+    let config = Config::init().to_owned();
 
     // setup pool connection
     let pool = match MySqlPoolOptions::new()
@@ -38,10 +38,8 @@ async fn main() -> std::io::Result<()> {
         Err(e) => eprintln!("🔥 Error executing migrations: {}", e),
     };
 
-    println!(
-        "{}",
-        format!("🚀 Server is running on port {}", config.port)
-    );
+    let port = config.clone().port;
+    println!("{}", format!("🚀 Server is running on port {}", port));
 
     // setup server
     let server = HttpServer::new(move || {
@@ -58,12 +56,16 @@ async fn main() -> std::io::Result<()> {
             .supports_credentials();
 
         App::new()
-            .app_data(web::Data::new(AppState { db: pool.clone() }))
+            .app_data(web::Data::new(AppState {
+                db: pool.clone(),
+                config: config.clone(),
+            }))
             .wrap(cors)
             .wrap(Logger::default())
+            .configure(auth_config)
             .route("/api/healthchecker", web::get().to(health_checker_handler))
     })
-    .bind(("127.0.0.1", config.port))?;
+    .bind(("127.0.0.1", port))?;
 
     // run server
     server.run().await?;

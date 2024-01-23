@@ -1,7 +1,7 @@
 -- Add up migration script here
 
 CREATE TABLE users (
-    id CHAR(36) PRIMARY KEY NOT NULL DEFAULT (UUID()),
+    id CHAR(36) PRIMARY KEY NOT NULL,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     photo VARCHAR(255) NOT NULL DEFAULT 'default.png',

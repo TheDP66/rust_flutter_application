@@ -1,18 +1,17 @@
 use actix_web::{
-    cookie::time::Duration as ActixWebDuration, cookie::Cookie, post, web, HttpResponse, Responder,
+    cookie::time::Duration as ActixWebDuration, cookie::Cookie, web, HttpResponse, Responder,
 };
+use serde_json::json;
 use validator::Validate;
 
 use crate::{
-    models::user::UserDto,
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     services::{auth_service::AuthService, user_services::UserService},
     utils::{password, token},
     AppState,
 };
 
-#[post("/register")]
-async fn register_user_handler(
+pub async fn register_user_handler(
     body: web::Json<RegisterUserSchema>,
     data: web::Data<AppState>,
 ) -> impl Responder {
@@ -22,13 +21,13 @@ async fn register_user_handler(
 
     if let Err(err) = auth_service.create_user(&user_id, body).await {
         if err.contains("Duplicate entry") {
-            return HttpResponse::BadRequest().json(serde_json::json!({
+            return HttpResponse::BadRequest().json(json!({
                 "status": "fail",
                 "message": "User with that email already exists"
             }));
         }
 
-        return HttpResponse::InternalServerError().json(serde_json::json!({
+        return HttpResponse::InternalServerError().json(json!({
             "status":"error",
             "message": format!("{:?}", err)
         }));
@@ -36,33 +35,30 @@ async fn register_user_handler(
 
     let user_service = UserService::new(data.db.clone());
 
-    match user_service.get_user_by_id(&user_id).await {
-        Ok(user_model) => {
-            let user_dto: UserDto = user_model.into();
-
-            let user_response = serde_json::json!({
+    match user_service.get_user(Some(&user_id), None, None).await {
+        Ok(user) => {
+            let user_response = json!({
                 "status": "success",
-                "data" : serde_json::json!({
-                    "note": user_dto
+                "data" : json!({
+                    "user": user
                 })
             });
 
             HttpResponse::Ok().json(user_response)
         }
-        Err(e) => HttpResponse::InternalServerError().json(serde_json::json!({
+        Err(e) => HttpResponse::InternalServerError().json(json!({
             "status": "error",
             "message": format!("{:?}", e)
         })),
     }
 }
 
-#[post("/login")]
 pub async fn login_user_handler(
     data: web::Data<AppState>,
     body: web::Json<LoginUserSchema>,
 ) -> impl Responder {
     let _ = body.validate().map_err(|e| {
-        return HttpResponse::BadRequest().json(serde_json::json!({
+        return HttpResponse::BadRequest().json(json!({
             "status":"fail",
             "message": e.to_string(),
         }));
@@ -75,7 +71,7 @@ pub async fn login_user_handler(
             let user = match result {
                 Some(user) => user,
                 None => {
-                    return HttpResponse::InternalServerError().json(serde_json::json!({
+                    return HttpResponse::InternalServerError().json(json!({
                         "status":"fail",
                         "message":"User not found!",
                     }))
@@ -84,7 +80,7 @@ pub async fn login_user_handler(
 
             let password_matches = password::compare(&body.password, &user.password)
                 .map_err(|_| {
-                    HttpResponse::Unauthorized().json(serde_json::json!({
+                    HttpResponse::Unauthorized().json(json!({
                         "status":"fail",
                         "message":"Email or password is wrong",
                     }))
@@ -98,7 +94,7 @@ pub async fn login_user_handler(
                     data.config.jwt_maxage,
                 )
                 .map_err(|e| {
-                    HttpResponse::InternalServerError().json(serde_json::json!({
+                    HttpResponse::InternalServerError().json(json!({
                         "status":"fail",
                         "message": e.to_string(),
                     }))
@@ -111,28 +107,40 @@ pub async fn login_user_handler(
                     .http_only(true)
                     .finish();
 
-                let token_response = serde_json::json!({
+                let token_response = json!({
                     "status": "success",
-                    "data" : serde_json::json!({
+                    "data" : json!({
                         "token": token,
                     })
                 });
 
                 return HttpResponse::Ok()
                     .cookie(cookie)
-                    .json(serde_json::json!(token_response));
+                    .json(json!(token_response));
             } else {
-                return HttpResponse::InternalServerError().json(serde_json::json!({
+                return HttpResponse::InternalServerError().json(json!({
                     "status": "error",
                     "message": "Email or password is wrong"
                 }));
             }
         }
         Err(e) => {
-            return HttpResponse::InternalServerError().json(serde_json::json!({
+            return HttpResponse::InternalServerError().json(json!({
                 "status":"fail",
                 "message": e.to_string(),
             }))
         }
     }
+}
+
+pub async fn logout_user_handler() -> impl Responder {
+    let cookie = Cookie::build("token", "")
+        .path("/")
+        .max_age(ActixWebDuration::new(-1, 0))
+        .http_only(true)
+        .finish();
+
+    HttpResponse::Ok().cookie(cookie).json(json!({
+        "status":"success"
+    }))
 }

@@ -31,3 +31,5 @@ install:
 	cargo add sqlx --features "runtime-async-std-native-tls mysql chrono uuid"
 	cargo install cargo-watch
 	cargo install sqlx-cli
+	cargo add utoipa -F "chrono actix_extras"
+	cargo add utoipa-swagger-ui -F actix-web

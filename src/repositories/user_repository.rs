@@ -2,22 +2,6 @@ use sqlx::MySqlPool;
 
 use crate::models::user::UserModel;
 
-pub async fn get_user_by_id(user_id: &String, pool: MySqlPool) -> Result<UserModel, sqlx::Error> {
-    let user = sqlx::query_as!(
-        UserModel,
-        r#"
-            SELECT * 
-            FROM users 
-            WHERE id = ?
-        "#,
-        user_id
-    )
-    .fetch_one(&pool)
-    .await?;
-
-    Ok(user)
-}
-
 pub async fn get_user(
     user_id: Option<&str>,
     name: Option<&str>,
@@ -27,7 +11,7 @@ pub async fn get_user(
     let user = sqlx::query_as!(
         UserModel,
         r#"
-            SELECT id, name, email, password, photo, verified, created_at, updated_at, role
+            SELECT *
             FROM users 
             WHERE id = ? OR name = ? OR email = ?
         "#,

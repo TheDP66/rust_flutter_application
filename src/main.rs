@@ -1,7 +1,11 @@
 use actix_cors::Cors;
 use actix_web::{http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
-use rust_flutter_application::{routes::auth::auth_config, utils::config::Config, AppState};
+use rust_flutter_application::{
+    routes::auth::auth_config,
+    utils::{config::Config, extractor::RequireAuth},
+    AppState,
+};
 use sqlx::mysql::MySqlPoolOptions;
 
 #[actix_web::main]
@@ -16,7 +20,7 @@ async fn main() -> std::io::Result<()> {
     // initialize env variable
     let config = Config::init().to_owned();
 
-    // setup pool connection
+    // setup pool connection*
     let pool = match MySqlPoolOptions::new()
         .max_connections(10)
         .connect(&config.database_url)
@@ -46,7 +50,7 @@ async fn main() -> std::io::Result<()> {
         // configure cors
         let cors = Cors::default()
             // .allowed_origin("http://localhost:3000")
-            .allow_any_origin()
+            // .allow_any_origin()
             .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,
@@ -63,7 +67,10 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::default())
             .configure(auth_config)
-            .route("/api/healthchecker", web::get().to(health_checker_handler))
+            .route(
+                "/api/healthchecker",
+                web::get().to(health_checker_handler).wrap(RequireAuth),
+            )
     })
     .bind(("127.0.0.1", port))?;
 

@@ -1,6 +1,7 @@
 use sqlx::MySqlPool;
 use utils::config::Config;
 
+pub mod dtos;
 pub mod handlers;
 pub mod models;
 pub mod repositories;

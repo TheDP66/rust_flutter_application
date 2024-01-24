@@ -1,0 +1,80 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "rust_flutter_application",
+    "dateExported": "2024-01-24T15:17:37.245Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "ef453682-202c-4af5-a133-e8aaf696fee4",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "health checker",
+            "url": "/api/healthchecker",
+            "method": "GET",
+            "sortNum": 10000,
+            "created": "2024-01-22T16:00:00.578Z",
+            "modified": "2024-01-22T16:02:06.869Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "78fce9ba-a5fa-4f65-ab0d-ce1ecacd875e",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "register user",
+            "url": "/auth/register",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2024-01-23T12:38:51.450Z",
+            "modified": "2024-01-24T15:03:49.795Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\":\"User4\",\n  \"email\":\"user4@mail.com\",\n  \"password\":\"user4\",\n  \"passwordConfirm\":\"user4\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "36bc9f27-fa70-498a-9fa0-dba3ee7c279d",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "login user",
+            "url": "/auth/login",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-01-23T14:00:20.716Z",
+            "modified": "2024-01-24T15:03:59.826Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"user4@mail.com\",\n  \"password\": \"user4\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "83cedc3d-a3f8-433e-846c-686cc611510d",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "logout user",
+            "url": "/auth/logout",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2024-01-24T13:24:46.122Z",
+            "modified": "2024-01-24T13:25:09.266Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "http://localhost:8090"
+        }
+    }
+}

@@ -5,12 +5,26 @@ use serde_json::json;
 use validator::Validate;
 
 use crate::{
+    dtos::user::{UserData, UserResponseDto},
+    models::user::UserModel,
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     services::{auth_service::AuthService, user_services::UserService},
     utils::{password, token},
     AppState,
 };
 
+#[utoipa::path(
+    post,
+    path = "/api/auth/register",
+    tag = "Register Account Endpoint",
+    request_body(content = RegisterUserSchema, description = "Credentials to create account", example = json!({"email": "user1@mail.com","name": "User Name","password": "password123","passwordConfirm": "password123"})),
+    responses(
+        (status=201, description= "Account created successfully", body= UserResponseDto ),
+        (status=400, description= "Validation Errors", body= Response),
+        (status=409, description= "User with email already exists", body= Response),
+        (status=500, description= "Internal Server Error", body= Response ),
+    )
+)]
 pub async fn register_user_handler(
     body: web::Json<RegisterUserSchema>,
     data: web::Data<AppState>,
@@ -37,12 +51,12 @@ pub async fn register_user_handler(
 
     match user_service.get_user(Some(&user_id), None, None).await {
         Ok(user) => {
-            let user_response = json!({
-                "status": "success",
-                "data" : json!({
-                    "user": user
-                })
-            });
+            let user_response = UserResponseDto {
+                status: "success".to_string(),
+                data: UserData {
+                    user: UserModel::into(user.unwrap()),
+                },
+            };
 
             HttpResponse::Ok().json(user_response)
         }

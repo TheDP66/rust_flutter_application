@@ -1,8 +1,9 @@
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 use crate::models::user::{UserModel, UserRole};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct UserDto {
     pub id: String,
     pub name: String,
@@ -30,4 +31,15 @@ impl Into<UserModel> for UserDto {
             updated_at: self.updated_at,
         }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct UserResponseDto {
+    pub status: String,
+    pub data: UserData,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct UserData {
+    pub user: UserDto,
 }

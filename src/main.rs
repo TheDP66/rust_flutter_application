@@ -2,11 +2,34 @@ use actix_cors::Cors;
 use actix_web::{http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
 use rust_flutter_application::{
+    dtos::{
+        global::Response,
+        user::{UserData, UserDto, UserResponseDto},
+    },
+    handlers,
+    models::user::UserRole,
     routes::auth::auth_config,
+    schemas::auth::RegisterUserSchema,
     utils::{config::Config, extractor::RequireAuth},
     AppState,
 };
 use sqlx::mysql::MySqlPoolOptions;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        handlers::auth_handler::register_user_handler,health_checker_handler
+    ),
+    components(
+        schemas(UserRole,UserDto,UserData,UserResponseDto,RegisterUserSchema,Response)
+    ),
+    tags(
+        (name = "Rust REST API", description = "Authentication in Rust Endpoints")
+    ),
+)]
+struct ApiDoc;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -45,6 +68,8 @@ async fn main() -> std::io::Result<()> {
     let port = config.clone().port;
     println!("{}", format!("🚀 Server is running on port {}", port));
 
+    let openapi = ApiDoc::openapi();
+
     // setup server
     let server = HttpServer::new(move || {
         // configure cors
@@ -71,6 +96,9 @@ async fn main() -> std::io::Result<()> {
                 "/api/healthchecker",
                 web::get().to(health_checker_handler).wrap(RequireAuth),
             )
+            .service(
+                SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
+            )
     })
     .bind(("127.0.0.1", port))?;
 
@@ -80,6 +108,14 @@ async fn main() -> std::io::Result<()> {
     Ok(())
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/healthchecker",
+    tag = "Health Checker Endpoint",
+    responses(
+        (status = 200, description= "Authenticated User", body = Response),       
+    )
+)]
 async fn health_checker_handler() -> impl Responder {
     const MESSAGE: &str = "100% healthy";
 

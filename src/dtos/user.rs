@@ -3,7 +3,7 @@ use utoipa::ToSchema;
 
 use crate::models::user::{UserModel, UserRole};
 
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
 pub struct UserDto {
     pub id: String,
     pub name: String,
@@ -30,6 +30,25 @@ impl Into<UserModel> for UserDto {
             created_at: self.created_at,
             updated_at: self.updated_at,
         }
+    }
+}
+
+impl UserDto {
+    pub fn filter(user: &UserModel) -> Self {
+        UserDto {
+            id: user.id.clone(),
+            name: user.name.clone(),
+            email: user.email.clone(),
+            role: user.role,
+            photo: user.photo.clone(),
+            verified: user.verified != 0,
+            created_at: user.created_at,
+            updated_at: user.updated_at,
+        }
+    }
+
+    pub fn filter_iter(users: &[UserModel]) -> Vec<UserDto> {
+        users.iter().map(UserDto::filter).collect()
     }
 }
 

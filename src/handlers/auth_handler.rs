@@ -19,7 +19,7 @@ use crate::{
 #[utoipa::path(
     post,
     path = "/api/auth/register",
-    tag = "Register Account Endpoint",
+    tag = "Authentication Endpoint",
     request_body(content = RegisterUserSchema, description = "Credentials to create account", example = json!({"email": "user1@mail.com","name": "User Name","password": "password123","passwordConfirm": "password123"})),
     responses(
         (status=201, description= "Account created successfully", body= UserResponseDto ),
@@ -73,7 +73,7 @@ pub async fn register_user_handler(
 #[utoipa::path(
     post,
     path = "/api/auth/login",
-    tag = "Login Account Endpoint",
+    tag = "Authentication Endpoint",
     request_body(content = LoginUserSchema, description = "Credentials to login", example = json!({"email": "user1@mail.com","password": "password123"})),
     responses(
         (status=201, description= "Account created successfully", body= UserLoginResponseDto ),
@@ -163,7 +163,7 @@ pub async fn login_user_handler(
 #[utoipa::path(
     post,
     path = "/api/auth/logout",
-    tag = "Logout Account Endpoint",
+    tag = "Authentication Endpoint",
     request_body(content = (), description = "Credentials to logout"),
     responses(
         (status=200, description= "Account logout successfully", body= Response ),

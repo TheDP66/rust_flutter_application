@@ -8,7 +8,7 @@ use rust_flutter_application::{
     },
     handlers,
     models::user::UserRole,
-    routes::auth::auth_config,
+    routes::{auth::auth_config, user::user_config},
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     utils::{config::Config, extractor::RequireAuth},
     AppState,
@@ -20,13 +20,16 @@ use utoipa_swagger_ui::SwaggerUi;
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        handlers::auth_handler::logout_user_handler,handlers::auth_handler::login_user_handler,handlers::auth_handler::register_user_handler,health_checker_handler
+        health_checker_handler,
+        handlers::auth_handler::logout_user_handler,handlers::auth_handler::login_user_handler,handlers::auth_handler::register_user_handler,
+        handlers::user_handler::get_me_handler,
     ),
     components(
         schemas(UserRole,UserDto,UserData,UserResponseDto,RegisterUserSchema,Response,UserLoginResponseDto,LoginUserSchema,TokenData)
     ),
     tags(
-        (name = "Authentication Endpoint", description = "Handle user authentication")
+        (name = "Authentication Endpoint", description = "Handle authentication"),
+        (name = "Users Endpoint", description = "Handle user")
     ),
 )]
 struct ApiDoc;
@@ -92,6 +95,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::default())
             .configure(auth_config)
+            .configure(user_config)
             .route(
                 "/api/healthchecker",
                 web::get()

@@ -14,7 +14,10 @@ use rust_flutter_application::{
     AppState,
 };
 use sqlx::mysql::MySqlPoolOptions;
-use utoipa::OpenApi;
+use utoipa::{
+    openapi::security::{HttpAuthScheme, HttpBuilder, SecurityScheme},
+    Modify, OpenApi,
+};
 use utoipa_swagger_ui::SwaggerUi;
 
 #[derive(OpenApi)]
@@ -31,8 +34,26 @@ use utoipa_swagger_ui::SwaggerUi;
         (name = "Authentication Endpoint", description = "Handle authentication"),
         (name = "Users Endpoint", description = "Handle user")
     ),
+    modifiers(&SecurityAddon)
 )]
 struct ApiDoc;
+
+struct SecurityAddon;
+
+impl Modify for SecurityAddon {
+    fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
+        let components = openapi.components.as_mut().unwrap();
+        components.add_security_scheme(
+            "token",
+            SecurityScheme::Http(
+                HttpBuilder::new()
+                    .scheme(HttpAuthScheme::Bearer)
+                    .bearer_format("JWT")
+                    .build(),
+            ),
+        )
+    }
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

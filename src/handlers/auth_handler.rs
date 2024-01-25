@@ -18,7 +18,7 @@ use crate::{
 
 #[utoipa::path(
     post,
-    path = "/api/auth/register",
+    path = "/auth/register",
     tag = "Authentication Endpoint",
     request_body(content = RegisterUserSchema, description = "Credentials to create account", example = json!({"email": "user1@mail.com","name": "User Name","password": "password123","passwordConfirm": "password123"})),
     responses(
@@ -72,7 +72,7 @@ pub async fn register_user_handler(
 
 #[utoipa::path(
     post,
-    path = "/api/auth/login",
+    path = "/auth/login",
     tag = "Authentication Endpoint",
     request_body(content = LoginUserSchema, description = "Credentials to login", example = json!({"email": "user1@mail.com","password": "password123"})),
     responses(
@@ -162,12 +162,15 @@ pub async fn login_user_handler(
 
 #[utoipa::path(
     post,
-    path = "/api/auth/logout",
+    path = "/auth/logout",
     tag = "Authentication Endpoint",
     request_body(content = (), description = "Credentials to logout"),
     responses(
         (status=200, description= "Account logout successfully", body= Response ),
-    )
+    ),
+    security(
+       ("token" = [])
+   )
 )]
 pub async fn logout_user_handler() -> impl Responder {
     let cookie = Cookie::build("token", "")

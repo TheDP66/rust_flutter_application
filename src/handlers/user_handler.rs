@@ -12,7 +12,10 @@ use crate::{
     request_body(content = (), description = "Return logged in user data"),
     responses(
         (status=201, description= "Logged in user detail", body= UserResponseDto ),
-    )
+    ),
+    security(
+       ("token" = [])
+   )
 )]
 pub async fn get_me_handler(user: Authenticated) -> impl Responder {
     let user_dto = UserDto::filter(&user);

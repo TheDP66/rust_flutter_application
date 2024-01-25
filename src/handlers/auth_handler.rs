@@ -5,7 +5,10 @@ use serde_json::json;
 use validator::Validate;
 
 use crate::{
-    dtos::user::{UserData, UserResponseDto},
+    dtos::{
+        global::Response,
+        user::{UserData, UserLoginResponseDto, UserResponseDto},
+    },
     models::user::UserModel,
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     services::{auth_service::AuthService, user_services::UserService},
@@ -67,6 +70,18 @@ pub async fn register_user_handler(
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/auth/login",
+    tag = "Login Account Endpoint",
+    request_body(content = LoginUserSchema, description = "Credentials to login", example = json!({"email": "user1@mail.com","password": "password123"})),
+    responses(
+        (status=201, description= "Account created successfully", body= UserLoginResponseDto ),
+        (status=400, description= "Validation Errors", body= Response),
+        (status=500, description= "User not found!", body= Response),
+        (status=401, description= "Email or password is wrong", body= Response),
+    )
+)]
 pub async fn login_user_handler(
     data: web::Data<AppState>,
     body: web::Json<LoginUserSchema>,
@@ -121,14 +136,12 @@ pub async fn login_user_handler(
                     .http_only(true)
                     .finish();
 
-                let token_response = json!({
-                    "status": "success",
-                    "data" : json!({
-                        "token": token,
-                    })
-                });
+                let token_response = UserLoginResponseDto {
+                    status: "success".to_string(),
+                    data: crate::dtos::user::TokenData { token },
+                };
 
-                return HttpResponse::Ok()
+                return HttpResponse::Created()
                     .cookie(cookie)
                     .json(json!(token_response));
             } else {
@@ -147,6 +160,15 @@ pub async fn login_user_handler(
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/auth/logout",
+    tag = "Logout Account Endpoint",
+    request_body(content = (), description = "Credentials to logout"),
+    responses(
+        (status=200, description= "Account logout successfully", body= Response ),
+    )
+)]
 pub async fn logout_user_handler() -> impl Responder {
     let cookie = Cookie::build("token", "")
         .path("/")
@@ -154,7 +176,8 @@ pub async fn logout_user_handler() -> impl Responder {
         .http_only(true)
         .finish();
 
-    HttpResponse::Ok().cookie(cookie).json(json!({
-        "status":"success"
-    }))
+    HttpResponse::Ok().cookie(cookie).json(Response {
+        status: "success",
+        message: "Account logout successfully".to_string(),
+    })
 }

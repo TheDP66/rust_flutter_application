@@ -4,12 +4,12 @@ use dotenv::dotenv;
 use rust_flutter_application::{
     dtos::{
         global::Response,
-        user::{UserData, UserDto, UserResponseDto},
+        user::{TokenData, UserData, UserDto, UserLoginResponseDto, UserResponseDto},
     },
     handlers,
     models::user::UserRole,
     routes::auth::auth_config,
-    schemas::auth::RegisterUserSchema,
+    schemas::auth::{LoginUserSchema, RegisterUserSchema},
     utils::{config::Config, extractor::RequireAuth},
     AppState,
 };
@@ -20,13 +20,13 @@ use utoipa_swagger_ui::SwaggerUi;
 #[derive(OpenApi)]
 #[openapi(
     paths(
-        handlers::auth_handler::register_user_handler,health_checker_handler
+        handlers::auth_handler::logout_user_handler,handlers::auth_handler::login_user_handler,handlers::auth_handler::register_user_handler,health_checker_handler
     ),
     components(
-        schemas(UserRole,UserDto,UserData,UserResponseDto,RegisterUserSchema,Response)
+        schemas(UserRole,UserDto,UserData,UserResponseDto,RegisterUserSchema,Response,UserLoginResponseDto,LoginUserSchema,TokenData)
     ),
     tags(
-        (name = "Rust REST API", description = "Authentication in Rust Endpoints")
+        (name = "Authentication Endpoint", description = "Handle user authentication")
     ),
 )]
 struct ApiDoc;
@@ -94,7 +94,13 @@ async fn main() -> std::io::Result<()> {
             .configure(auth_config)
             .route(
                 "/api/healthchecker",
-                web::get().to(health_checker_handler).wrap(RequireAuth),
+                web::get()
+                    .to(health_checker_handler)
+                    .wrap(RequireAuth::allowed_roles(vec![
+                        UserRole::User,
+                        UserRole::Admin,
+                        UserRole::Moderator,
+                    ])),
             )
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),

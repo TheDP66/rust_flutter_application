@@ -1,7 +1,8 @@
-use actix_web::HttpResponse;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
+
+use super::error::{ErrorMessage, HttpError};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
@@ -35,7 +36,7 @@ pub fn create_token(
     )
 }
 
-pub fn decode_token<T: Into<String>>(token: T, secret: &[u8]) -> Result<String, HttpResponse> {
+pub fn decode_token<T: Into<String>>(token: T, secret: &[u8]) -> Result<String, HttpError> {
     let decoded = decode::<TokenClaims>(
         &token.into(),
         &DecodingKey::from_secret(secret),
@@ -44,9 +45,6 @@ pub fn decode_token<T: Into<String>>(token: T, secret: &[u8]) -> Result<String, 
 
     match decoded {
         Ok(token) => Ok(token.claims.sub),
-        Err(_) => Err(HttpResponse::Unauthorized().json(serde_json::json!({
-            "status": "fail",
-            "message": "Authentication token is invalid or expired"
-        }))),
+        Err(_) => Err(HttpError::new(ErrorMessage::InvalidToken.to_string(), 401)),
     }
 }

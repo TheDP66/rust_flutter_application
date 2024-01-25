@@ -43,3 +43,14 @@ pub struct UserResponseDto {
 pub struct UserData {
     pub user: UserDto,
 }
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct UserLoginResponseDto {
+    pub status: String,
+    pub data: TokenData,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct TokenData {
+    pub token: String,
+}

@@ -90,7 +90,10 @@ async fn main() -> std::io::Result<()> {
     };
 
     let port = config.clone().port;
-    println!("{}", format!("🚀 Server is running on port {}", port));
+    println!(
+        "{}",
+        format!("🚀 Server is running on port http://127.0.0.1:{}", port)
+    );
 
     let openapi = ApiDoc::openapi();
 

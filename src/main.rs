@@ -102,7 +102,7 @@ async fn main() -> std::io::Result<()> {
         // configure cors
         let cors = Cors::default()
             // .allowed_origin("http://localhost:3000")
-            // .allow_any_origin()
+            .allow_any_origin()
             .allowed_methods(vec!["GET", "POST", "PATCH", "DELETE"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,

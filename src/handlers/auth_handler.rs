@@ -7,9 +7,8 @@ use validator::Validate;
 use crate::{
     dtos::{
         global::Response,
-        user::{UserData, UserLoginResponseDto, UserResponseDto},
+        user::{UserLoginResponseDto, UserRegisterResponseDto},
     },
-    models::user::UserModel,
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     services::{auth_service::AuthService, user_services::UserService},
     utils::{password, token},
@@ -22,7 +21,7 @@ use crate::{
     tag = "Authentication Endpoint",
     request_body(content = RegisterUserSchema, description = "Credentials to create account", example = json!({"email": "user1@mail.com","name": "User Name","password": "password123","passwordConfirm": "password123"})),
     responses(
-        (status=201, description= "Account created successfully", body= UserResponseDto ),
+        (status=201, description= "Account created successfully", body= UserRegisterResponseDto ),
         (status=400, description= "Validation Errors", body= Response),
         (status=409, description= "User with email already exists", body= Response),
         (status=500, description= "Internal Server Error", body= Response ),
@@ -50,24 +49,33 @@ pub async fn register_user_handler(
         }));
     }
 
-    let user_service = UserService::new(data.db.clone());
+    let token = token::create_token(
+        &user_id,
+        data.config.jwt_secret.as_bytes(),
+        data.config.jwt_maxage,
+    )
+    .map_err(|e| {
+        HttpResponse::InternalServerError().json(json!({
+            "status":"fail",
+            "message": e.to_string(),
+        }))
+    })
+    .unwrap();
 
-    match user_service.get_user(Some(&user_id), None, None).await {
-        Ok(user) => {
-            let user_response = UserResponseDto {
-                status: "success".to_string(),
-                data: UserData {
-                    user: UserModel::into(user.unwrap()),
-                },
-            };
+    let cookie = Cookie::build("token", token.to_owned())
+        .path("/")
+        .max_age(ActixWebDuration::new(60 * &data.config.jwt_maxage, 0))
+        .http_only(true)
+        .finish();
 
-            HttpResponse::Ok().json(user_response)
-        }
-        Err(e) => HttpResponse::InternalServerError().json(json!({
-            "status": "error",
-            "message": format!("{:?}", e)
-        })),
-    }
+    let token_response = UserRegisterResponseDto {
+        status: "success".to_string(),
+        data: crate::dtos::user::TokenData { token },
+    };
+
+    return HttpResponse::Created()
+        .cookie(cookie)
+        .json(json!(token_response));
 }
 
 #[utoipa::path(
@@ -76,7 +84,7 @@ pub async fn register_user_handler(
     tag = "Authentication Endpoint",
     request_body(content = LoginUserSchema, description = "Credentials to login", example = json!({"email": "user1@mail.com","password": "password123"})),
     responses(
-        (status=201, description= "Account created successfully", body= UserLoginResponseDto ),
+        (status=201, description= "Login successfully", body= UserLoginResponseDto ),
         (status=400, description= "Validation Errors", body= Response),
         (status=500, description= "User not found!", body= Response),
         (status=401, description= "Email or password is wrong", body= Response),

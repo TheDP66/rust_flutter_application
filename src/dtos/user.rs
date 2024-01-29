@@ -64,6 +64,12 @@ pub struct UserData {
 }
 
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct UserRegisterResponseDto {
+    pub status: String,
+    pub data: TokenData,
+}
+
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct UserLoginResponseDto {
     pub status: String,
     pub data: TokenData,

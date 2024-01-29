@@ -29,6 +29,13 @@ pub async fn get_barang_by_name(
     name: Option<&str>,
     pool: MySqlPool,
 ) -> Result<Vec<BarangModel>, sqlx::Error> {
+    let names = match name {
+        None => "",
+        Some(e) => e,
+    };
+
+    let name_pattern = format!("%{}%", names);
+
     let barang = sqlx::query_as!(
         BarangModel,
         r#"
@@ -36,7 +43,7 @@ pub async fn get_barang_by_name(
             FROM barang
             WHERE name LIKE ?
         "#,
-        name,
+        name_pattern,
     )
     .fetch_all(&pool)
     .await?;

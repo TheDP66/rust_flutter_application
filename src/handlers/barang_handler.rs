@@ -2,9 +2,9 @@ use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
 
 use crate::{
-    dtos::barang::{BarangData, BarangResponseDto},
+    dtos::barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
     models::barang::BarangModel,
-    schemas::barang::InsertBarangSchema,
+    schemas::barang::{GetBarangSchema, InsertBarangSchema},
     services::barang_service::BarangService,
     AppState,
 };
@@ -30,6 +30,35 @@ pub async fn insert_barang_handler(
                 status: "success".to_string(),
                 data: BarangData {
                     barang: BarangModel::into(barang),
+                },
+            };
+
+            HttpResponse::Ok().json(response)
+        }
+        Err(e) => HttpResponse::InternalServerError().json(json!({
+            "status": "error",
+            "message": format!("{:?}", e)
+        })),
+    }
+}
+
+pub async fn get_barang_handler(
+    body: web::Json<GetBarangSchema>,
+    data: web::Data<AppState>,
+) -> impl Responder {
+    let barang_service = BarangService::new(data.db.clone());
+
+    match barang_service
+        .get_barang_by_name(body.name.as_deref())
+        .await
+    {
+        Ok(barang) => {
+            let barangs_response = BarangDto::filter_iter(&barang);
+
+            let response = BarangsResponseDto {
+                status: "success".to_string(),
+                data: BarangsData {
+                    barang: barangs_response,
                 },
             };
 

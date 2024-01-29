@@ -27,7 +27,7 @@ impl From<String> for UserRole {
             "admin" => UserRole::Admin,
             "moderator" => UserRole::Moderator,
             "user" => UserRole::User,
-            _ => UserRole::User, // Default to UserRole::User or handle as needed
+            _ => UserRole::User,
         }
     }
 }

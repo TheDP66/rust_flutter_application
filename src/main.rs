@@ -8,7 +8,7 @@ use rust_flutter_application::{
     },
     handlers,
     models::user::UserRole,
-    routes::{auth::auth_config, user::user_config},
+    routes::{auth::auth_config, barang::barang_config, user::user_config},
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     utils::{config::Config, extractor::RequireAuth},
     AppState,
@@ -120,6 +120,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(Logger::default())
             .configure(auth_config)
             .configure(user_config)
+            .configure(barang_config)
             .route(
                 "/api/healthchecker",
                 web::get()

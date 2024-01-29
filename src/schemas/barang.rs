@@ -13,3 +13,8 @@ pub struct InsertBarangSchema {
     pub stock: i32,
     pub expired_at: Option<NaiveDate>,
 }
+
+#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
+pub struct GetBarangSchema {
+    pub name: Option<String>,
+}

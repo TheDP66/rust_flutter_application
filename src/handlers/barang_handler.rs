@@ -1,3 +1,5 @@
+use std::ptr::null;
+
 use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
 
@@ -43,13 +45,15 @@ pub async fn insert_barang_handler(
 }
 
 pub async fn get_barang_handler(
-    body: web::Json<GetBarangSchema>,
+    query: web::Query<GetBarangSchema>,
     data: web::Data<AppState>,
 ) -> impl Responder {
+    let query_params = query.into_inner();
+
     let barang_service = BarangService::new(data.db.clone());
 
     match barang_service
-        .get_barang_by_name(body.name.as_deref())
+        .get_barang_by_name(query_params.name.as_deref())
         .await
     {
         Ok(barang) => {

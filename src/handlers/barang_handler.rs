@@ -1,5 +1,3 @@
-use std::ptr::null;
-
 use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
 

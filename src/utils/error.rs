@@ -116,12 +116,12 @@ impl HttpError {
         }
     }
 
-    // pub fn not_found(message: impl Into<String>) -> Self {
-    //     HttpError {
-    //         message: message.into(),
-    //         status: 404,
-    //     }
-    // }
+    pub fn not_found(message: impl Into<String>) -> Self {
+        HttpError {
+            message: message.into(),
+            status: 404,
+        }
+    }
 
     pub fn into_http_response(self) -> HttpResponse {
         match self.status {
@@ -130,6 +130,10 @@ impl HttpError {
                 message: self.message.into(),
             }),
             401 => HttpResponse::Unauthorized().json(Response {
+                status: "fail",
+                message: self.message.into(),
+            }),
+            404 => HttpResponse::NotFound().json(Response {
                 status: "fail",
                 message: self.message.into(),
             }),

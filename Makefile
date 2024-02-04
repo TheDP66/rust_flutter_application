@@ -16,6 +16,9 @@ migrate-down:
 server:
 	cargo watch -q -c -w src/ -x run
 
+server-up:
+	ngrok http 8090
+
 install:
 	cargo add actix-web
 	cargo add actix-cors

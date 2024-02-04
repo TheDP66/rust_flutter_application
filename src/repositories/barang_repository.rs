@@ -42,6 +42,7 @@ pub async fn get_barang_by_name(
             SELECT *
             FROM barang
             WHERE name LIKE ?
+            ORDER BY created_at DESC 
         "#,
         name_pattern,
     )

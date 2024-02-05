@@ -121,16 +121,7 @@ async fn main() -> std::io::Result<()> {
             .configure(auth_config)
             .configure(user_config)
             .configure(barang_config)
-            .route(
-                "/api/healthchecker",
-                web::get()
-                    .to(health_checker_handler)
-                    .wrap(RequireAuth::allowed_roles(vec![
-                        UserRole::User,
-                        UserRole::Admin,
-                        UserRole::Moderator,
-                    ])),
-            )
+            .route("/api/healthchecker", web::get().to(health_checker_handler))
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
             )

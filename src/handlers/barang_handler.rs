@@ -9,6 +9,19 @@ use crate::{
     AppState,
 };
 
+#[utoipa::path(
+    post,
+    path = "/api/barang",
+    tag = "Barang Endpoint",
+    request_body(content = (), description = "Insert new barang", example = json!({"name":"Barang 1", "price": 11000, "stock": 100, "expired_at": "2024-02-05"})),
+    responses(
+        (status=200, description= "Success insert new barang", body= BarangResponseDto ),
+        (status=500, description= "Failed insert barang", body= Response ),
+    ),
+    security(
+       ("token" = [])
+   )
+)]
 pub async fn insert_barang_handler(
     body: web::Json<InsertBarangSchema>,
     data: web::Data<AppState>,
@@ -42,6 +55,21 @@ pub async fn insert_barang_handler(
     }
 }
 
+#[utoipa::path(
+    get,
+    path = "/api/barang",
+    tag = "Barang Endpoint",
+    params(
+        GetBarangSchema,
+    ),
+    responses(
+        (status=200, description= "Success get barang", body= BarangsResponseDto ),
+        (status=500, description= "Failed get barang", body= Response ),
+    ),
+    security(
+       ("token" = [])
+   )
+)]
 pub async fn get_barang_handler(
     query: web::Query<GetBarangSchema>,
     data: web::Data<AppState>,

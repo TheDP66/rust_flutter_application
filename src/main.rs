@@ -3,6 +3,7 @@ use actix_web::{http::header, middleware::Logger, web, App, HttpResponse, HttpSe
 use dotenv::dotenv;
 use rust_flutter_application::{
     dtos::{
+        barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
         global::Response,
         user::{TokenData, UserData, UserDto, UserLoginResponseDto, UserResponseDto},
     },
@@ -10,7 +11,7 @@ use rust_flutter_application::{
     models::user::UserRole,
     routes::{auth::auth_config, barang::barang_config, user::user_config},
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
-    utils::{config::Config, extractor::RequireAuth},
+    utils::config::Config,
     AppState,
 };
 use sqlx::mysql::MySqlPoolOptions;
@@ -26,13 +27,21 @@ use utoipa_swagger_ui::SwaggerUi;
         health_checker_handler,
         handlers::auth_handler::logout_user_handler,handlers::auth_handler::login_user_handler,handlers::auth_handler::register_user_handler,
         handlers::user_handler::get_me_handler,
+        handlers::barang_handler::insert_barang_handler,handlers::barang_handler::get_barang_handler,
     ),
     components(
-        schemas(UserRole,UserDto,UserData,UserResponseDto,RegisterUserSchema,Response,UserLoginResponseDto,LoginUserSchema,TokenData)
+        schemas(
+            Response,UserRole,
+            UserDto,BarangDto,
+            UserData,TokenData,BarangsData,BarangData,
+            UserResponseDto,UserLoginResponseDto,BarangsResponseDto,BarangResponseDto,
+            LoginUserSchema,RegisterUserSchema,
+        ),
     ),
     tags(
         (name = "Authentication Endpoint", description = "Handle authentication"),
-        (name = "Users Endpoint", description = "Handle user")
+        (name = "Users Endpoint", description = "Handle user"),
+        (name = "Barang Endpoint", description = "Handle barang"),
     ),
     modifiers(&SecurityAddon)
 )]

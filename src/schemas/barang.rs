@@ -1,6 +1,6 @@
 use chrono::NaiveDate;
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use utoipa::{IntoParams, ToSchema};
 use validator::Validate;
 
 #[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
@@ -14,7 +14,7 @@ pub struct InsertBarangSchema {
     pub expired_at: Option<NaiveDate>,
 }
 
-#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, IntoParams)]
 pub struct GetBarangSchema {
     pub name: Option<String>,
 }

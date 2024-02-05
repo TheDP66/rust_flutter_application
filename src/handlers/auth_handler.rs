@@ -19,7 +19,7 @@ use crate::{
     post,
     path = "/auth/register",
     tag = "Authentication Endpoint",
-    request_body(content = RegisterUserSchema, description = "Credentials to create account", example = json!({"email": "user1@mail.com","name": "User Name","password": "password123","passwordConfirm": "password123"})),
+    request_body(content = RegisterUserSchema, description = "Credentials to create account", example = json!({"email": "user1@mail.com","name": "User Name","password": "user1","passwordConfirm": "user1"})),
     responses(
         (status=201, description= "Account created successfully", body= UserRegisterResponseDto ),
         (status=400, description= "Validation Errors", body= Response),
@@ -82,7 +82,7 @@ pub async fn register_user_handler(
     post,
     path = "/auth/login",
     tag = "Authentication Endpoint",
-    request_body(content = LoginUserSchema, description = "Credentials to login", example = json!({"email": "user1@mail.com","password": "password123"})),
+    request_body(content = LoginUserSchema, description = "Credentials to login", example = json!({"email": "user1@mail.com","password": "user1"})),
     responses(
         (status=201, description= "Login successfully", body= UserLoginResponseDto ),
         (status=400, description= "Validation Errors", body= Response),

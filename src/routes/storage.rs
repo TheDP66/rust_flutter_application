@@ -5,7 +5,7 @@ use crate::{
 use actix_web::web;
 
 pub fn storage_config(conf: &mut web::ServiceConfig) {
-    let scope = web::scope("/api").route(
+    let scope = web::scope("/storage").route(
         "/img/{title}",
         web::get()
             .to(get_image_handler)

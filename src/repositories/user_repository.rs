@@ -1,4 +1,4 @@
-use sqlx::MySqlPool;
+use sqlx::{mysql::MySqlQueryResult, MySqlPool};
 
 use crate::models::user::UserModel;
 
@@ -23,4 +23,28 @@ pub async fn get_user(
     .await?;
 
     Ok(user)
+}
+
+pub async fn update_user(
+    user_id: &str,
+    photo: Option<&str>,
+    pool: MySqlPool,
+) -> Result<MySqlQueryResult, String> {
+    let query_result = sqlx::query(
+        r#"
+            UPDATE users 
+            SET photo = ? 
+            WHERE id = ?
+        "#,
+    )
+    .bind(match photo {
+        Some(photo_id) => photo_id,
+        None => "default.png",
+    })
+    .bind(user_id)
+    .execute(&pool)
+    .await
+    .map_err(|err: sqlx::Error| err.to_string());
+
+    Ok(query_result?)
 }

@@ -1,0 +1,147 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "rust_flutter_application",
+    "dateExported": "2024-02-09T10:48:56.079Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "83cedc3d-a3f8-433e-846c-686cc611510d",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "logout user",
+            "url": "/auth/logout",
+            "method": "POST",
+            "sortNum": 2500,
+            "created": "2024-01-24T13:24:46.122Z",
+            "modified": "2024-01-24T13:25:09.266Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "ef453682-202c-4af5-a133-e8aaf696fee4",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "health checker",
+            "url": "/api/healthchecker",
+            "method": "GET",
+            "sortNum": 3750,
+            "created": "2024-01-22T16:00:00.578Z",
+            "modified": "2024-01-22T16:02:06.869Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "78fce9ba-a5fa-4f65-ab0d-ce1ecacd875e",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "register user",
+            "url": "/auth/register",
+            "method": "POST",
+            "sortNum": 5000,
+            "created": "2024-01-23T12:38:51.450Z",
+            "modified": "2024-02-09T10:35:55.239Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\":\"u 30\",\n  \"email\":\"u30@m.c\",\n  \"password\":\"123ABCdef@\",\n  \"passwordConfirm\":\"123ABCdef@\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "36bc9f27-fa70-498a-9fa0-dba3ee7c279d",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "login user",
+            "url": "/auth/login",
+            "method": "POST",
+            "sortNum": 7500,
+            "created": "2024-01-23T14:00:20.716Z",
+            "modified": "2024-02-09T10:47:50.865Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"email\": \"user1@mail.com\",\n  \"password\": \"user1\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "5dfab763-4ae4-4d25-9065-f96e3130ac77",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "me user",
+            "url": "/api/users/me",
+            "method": "GET",
+            "sortNum": 17500,
+            "created": "2024-01-25T15:51:19.089Z",
+            "modified": "2024-01-25T15:51:25.160Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        },
+        {
+            "_id": "7f9c4cab-9c8f-4a3a-8f68-84c8eac55636",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "insert barang",
+            "url": "/api/barang",
+            "method": "POST",
+            "sortNum": 27500,
+            "created": "2024-01-29T13:22:58.245Z",
+            "modified": "2024-02-02T15:30:18.847Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"name\": \"Barang 3\",\n  \"price\": 150000,\n  \"stock\": 90,\n  \"expired_at\": \"2027-07-05\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "c84a51f5-43e6-40b4-a71d-3fa6c139ac86",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "list barang",
+            "url": "/api/barang?name=",
+            "method": "GET",
+            "sortNum": 37500,
+            "created": "2024-01-29T13:24:56.845Z",
+            "modified": "2024-02-01T15:29:34.399Z",
+            "headers": [],
+            "params": [
+                {
+                    "name": "name",
+                    "value": "",
+                    "isPath": false
+                }
+            ],
+            "tests": []
+        },
+        {
+            "_id": "c5806ed5-2f69-4377-9afa-43949ab54171",
+            "colId": "ebdaca30-b770-44c4-95ba-3e8907522b8f",
+            "containerId": "",
+            "name": "update user",
+            "url": "/api/users/me",
+            "method": "POST",
+            "sortNum": 47500,
+            "created": "2024-02-09T10:33:40.673Z",
+            "modified": "2024-02-09T10:34:06.937Z",
+            "headers": [],
+            "params": [],
+            "tests": []
+        }
+    ],
+    "settings": {
+        "options": {
+            "baseUrl": "http://localhost:8090"
+        }
+    }
+}

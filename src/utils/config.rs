@@ -8,6 +8,7 @@ pub struct Config {
     pub jwt_secret: String,
     pub jwt_maxage: i64,
     pub port: u16,
+    pub storage_dir: String,
 }
 
 impl Config {
@@ -16,9 +17,11 @@ impl Config {
         let jwt_secret = get_env_var("JWT_SECRET_KEY");
         let jwt_mexage = get_env_var("JWT_MAXAGE");
         let port = get_env_var("PORT");
+        let storage_dir = get_env_var("STORAGE_DIR");
 
         Config {
             database_url,
+            storage_dir,
             jwt_secret,
             jwt_maxage: jwt_mexage.parse::<i64>().unwrap(),
             port: port.parse::<u16>().unwrap(),

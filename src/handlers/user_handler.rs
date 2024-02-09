@@ -1,9 +1,15 @@
-use actix_web::{HttpResponse, Responder};
-
 use crate::{
-    dtos::user::{UserData, UserDto, UserResponseDto},
+    dtos::{
+        global::Response,
+        user::{UserData, UserDto, UserResponseDto},
+    },
+    services::user_services::UserService,
     utils::extractor::Authenticated,
+    AppState,
 };
+use actix_multipart::Multipart;
+use actix_web::{web, HttpResponse, Responder};
+use serde_json::json;
 
 #[utoipa::path(
     get,
@@ -26,4 +32,34 @@ pub async fn get_me_handler(user: Authenticated) -> impl Responder {
     };
 
     HttpResponse::Ok().json(response_data)
+}
+
+pub async fn update_photo_handler(
+    user: Authenticated,
+    payload: Multipart,
+    data: web::Data<AppState>,
+) -> impl Responder {
+    let photo_id = uuid::Uuid::new_v4().to_string();
+
+    let user_service = UserService::new(data.db.clone());
+
+    let user_dto = UserDto::filter(&user);
+
+    match user_service
+        .update_photo(Some(&photo_id), Some(&user_dto.id), payload)
+        .await
+    {
+        Ok(_) => {}
+        Err(e) => {
+            return HttpResponse::InternalServerError().json(json!({
+                "status":"fail",
+                "message": e,
+            }))
+        }
+    }
+
+    return HttpResponse::Ok().json(Response {
+        status: "success",
+        message: "User updated".to_string(),
+    });
 }

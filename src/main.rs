@@ -9,7 +9,9 @@ use rust_flutter_application::{
     },
     handlers,
     models::user::UserRole,
-    routes::{auth::auth_config, barang::barang_config, user::user_config},
+    routes::{
+        auth::auth_config, barang::barang_config, storage::storage_config, user::user_config,
+    },
     schemas::auth::{LoginUserSchema, RegisterUserSchema},
     utils::config::Config,
     AppState,
@@ -130,6 +132,7 @@ async fn main() -> std::io::Result<()> {
             .configure(auth_config)
             .configure(user_config)
             .configure(barang_config)
+            .configure(storage_config)
             .route("/api/healthchecker", web::get().to(health_checker_handler))
             .service(
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),

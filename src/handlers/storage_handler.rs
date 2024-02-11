@@ -1,9 +1,7 @@
-use std::path::PathBuf;
-
+use crate::utils::config::Config;
 use actix_files::NamedFile;
 use actix_web::{error, web, Responder};
-
-use crate::utils::config::Config;
+use std::path::PathBuf;
 
 pub async fn get_image_handler(title: web::Path<String>) -> impl Responder {
     let config = Config::init().to_owned();

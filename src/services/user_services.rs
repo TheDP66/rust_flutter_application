@@ -54,27 +54,31 @@ impl UserService {
             if field.name() == "file" {
                 form_data.file = Some(buffer.clone());
 
-                let filename = field.content_disposition().get_filename().unwrap();
+                match field.content_disposition().get_filename() {
+                    Some(filename) => {
+                        if let Some(extension) = filename.rfind(".") {
+                            let extension = &filename[extension..];
 
-                if let Some(extension) = filename.rfind(".") {
-                    let extension = &filename[extension..];
+                            saved_name = match photo_id {
+                                Some(id) => format!("{}{}", id, extension),
+                                None => String::from("default.png"),
+                            };
 
-                    saved_name = match photo_id {
-                        Some(id) => format!("{}{}", id, extension),
-                        None => String::from("default.png"),
-                    };
+                            let destination: String =
+                                format!("{}{}", config.storage_dir, saved_name,);
 
-                    let destination: String = format!("{}{}", config.storage_dir, saved_name,);
+                            let mut file = match File::create(destination) {
+                                Ok(file) => file,
+                                Err(e) => return Err(e.to_string()),
+                            };
 
-                    let mut file = match File::create(destination) {
-                        Ok(file) => file,
-                        Err(e) => return Err(e.to_string()),
-                    };
-
-                    match file.write_all(&form_data.file.unwrap()) {
-                        Ok(_) => {}
-                        Err(e) => return Err(e.to_string()),
-                    };
+                            match file.write_all(&form_data.file.unwrap()) {
+                                Ok(_) => {}
+                                Err(e) => return Err(e.to_string()),
+                            };
+                        };
+                    }
+                    None => (),
                 };
             }
         }

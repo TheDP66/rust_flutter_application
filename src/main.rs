@@ -5,14 +5,20 @@ use rust_flutter_application::{
     dtos::{
         barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
         global::Response,
-        user::{TokenData, UserData, UserDto, UserLoginResponseDto, UserResponseDto},
+        user::{
+            TokenData, UserData, UserDto, UserLoginResponseDto, UserRegisterResponseDto,
+            UserResponseDto,
+        },
     },
     handlers,
     models::user::UserRole,
     routes::{
         auth::auth_config, barang::barang_config, storage::storage_config, user::user_config,
     },
-    schemas::auth::{LoginUserSchema, RegisterUserSchema},
+    schemas::{
+        auth::{LoginUserSchema, RegisterUserSchema},
+        barang::{InsertBarangSchema, SyncBarangSchema},
+    },
     utils::config::Config,
     AppState,
 };
@@ -29,15 +35,15 @@ use utoipa_swagger_ui::SwaggerUi;
         health_checker_handler,
         handlers::auth_handler::logout_user_handler,handlers::auth_handler::login_user_handler,handlers::auth_handler::register_user_handler,
         handlers::user_handler::get_me_handler,
-        handlers::barang_handler::insert_barang_handler,handlers::barang_handler::get_barang_handler,
+        handlers::barang_handler::insert_barang_handler,handlers::barang_handler::get_barang_handler,handlers::barang_handler::sync_barang_handler
     ),
     components(
         schemas(
             Response,UserRole,
             UserDto,BarangDto,
             UserData,TokenData,BarangsData,BarangData,
-            UserResponseDto,UserLoginResponseDto,BarangsResponseDto,BarangResponseDto,
-            LoginUserSchema,RegisterUserSchema,
+            UserResponseDto,UserLoginResponseDto,BarangsResponseDto,BarangResponseDto,UserRegisterResponseDto,
+            LoginUserSchema,RegisterUserSchema,SyncBarangSchema,InsertBarangSchema
         ),
     ),
     tags(

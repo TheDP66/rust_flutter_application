@@ -1,9 +1,15 @@
-use actix_web::{web, HttpResponse, Responder};
+use actix_web::{
+    web::{self, Json},
+    HttpResponse, Responder,
+};
 use serde_json::json;
 use validator::Validate;
 
 use crate::{
-    dtos::barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
+    dtos::{
+        barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
+        global::Response,
+    },
     models::barang::BarangModel,
     schemas::barang::{GetBarangSchema, InsertBarangSchema, SyncBarangSchema},
     services::barang_service::BarangService,
@@ -110,15 +116,57 @@ pub async fn get_barang_handler(
     }
 }
 
+#[utoipa::path(
+    post,
+    path = "/api/barang/sync",
+    tag = "Barang Endpoint",
+    params(
+        SyncBarangSchema,
+    ),
+    request_body(content = (), description = "Insert new barang", 
+    example = json!({"barang": [{"name":"Barang 1", "price": 11000, "stock": 100, "expired_at": "2024-02-05"}, {"name":"Barang 2", "price": 22000, "stock": 200, "expired_at": "2024-06-05"},]})),
+    responses(
+        (status=200, description= "Success sync barang", body= Response ),
+        (status=500, description= "Failed sync barang", body= Response ),
+    ),
+    security(
+       ("token" = [])
+   )
+)]
 pub async fn sync_barang_handler(
     body: web::Json<SyncBarangSchema>,
     data: web::Data<AppState>,
 ) -> impl Responder {
+    let mut validation_errors = vec![];
+
     let barang_service = BarangService::new(data.db.clone());
 
-    for barang in &body.barang {}
+    for barang_val in body.barang.clone() {
+        let _ = barang_val.validate().map_err(|e| {
+            validation_errors.push(e.to_string());
+        });
+    }
 
-    HttpResponse::Ok().json(json!({
-        "status": "success".to_string(),
-    }))
+    if validation_errors.is_empty() {
+        for barang in body.barang.clone() {
+            let barang_id = uuid::Uuid::new_v4().to_string();
+
+            if let Err(err) = barang_service.insert_barang(&barang_id, Json(barang)).await {
+                return HttpResponse::InternalServerError().json(json!({
+                    "status":"error",
+                    "message": format!("{:?}", err)
+                }));
+            }
+        }
+
+        HttpResponse::Ok().json(Response {
+            status: "success",
+            message: "Sync barang success".to_owned(),
+        })
+    } else {
+        HttpResponse::BadRequest().json(json!({
+            "status": "fail",
+            "message": validation_errors,
+        }))
+    }
 }

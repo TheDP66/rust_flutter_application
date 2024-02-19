@@ -1,7 +1,7 @@
 use actix_web::web;
 
 use crate::{
-    handlers::barang_handler::{get_barang_handler, insert_barang_handler},
+    handlers::barang_handler::{get_barang_handler, insert_barang_handler, sync_barang_handler},
     models::user::UserRole,
     utils::extractor::RequireAuth,
 };
@@ -22,6 +22,16 @@ pub fn barang_config(conf: &mut web::ServiceConfig) {
             "",
             web::post()
                 .to(insert_barang_handler)
+                .wrap(RequireAuth::allowed_roles(vec![
+                    UserRole::User,
+                    UserRole::Moderator,
+                    UserRole::Admin,
+                ])),
+        )
+        .route(
+            "/sync",
+            web::post()
+                .to(sync_barang_handler)
                 .wrap(RequireAuth::allowed_roles(vec![
                     UserRole::User,
                     UserRole::Moderator,

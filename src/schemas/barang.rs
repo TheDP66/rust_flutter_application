@@ -18,3 +18,8 @@ pub struct InsertBarangSchema {
 pub struct GetBarangSchema {
     pub name: Option<String>,
 }
+
+#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema, IntoParams)]
+pub struct SyncBarangSchema {
+    pub barang: Vec<InsertBarangSchema>,
+}

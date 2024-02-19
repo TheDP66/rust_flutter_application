@@ -1,10 +1,11 @@
 use actix_web::{web, HttpResponse, Responder};
 use serde_json::json;
+use validator::Validate;
 
 use crate::{
     dtos::barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
     models::barang::BarangModel,
-    schemas::barang::{GetBarangSchema, InsertBarangSchema},
+    schemas::barang::{GetBarangSchema, InsertBarangSchema, SyncBarangSchema},
     services::barang_service::BarangService,
     AppState,
 };
@@ -26,31 +27,39 @@ pub async fn insert_barang_handler(
     body: web::Json<InsertBarangSchema>,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    let barang_service = BarangService::new(data.db.clone());
+    match body.validate() {
+        Ok(()) => {
+            let barang_service = BarangService::new(data.db.clone());
 
-    let barang_id = uuid::Uuid::new_v4().to_string();
+            let barang_id = uuid::Uuid::new_v4().to_string();
 
-    if let Err(err) = barang_service.insert_barang(&barang_id, body).await {
-        return HttpResponse::InternalServerError().json(json!({
-            "status":"error",
-            "message": format!("{:?}", err)
-        }));
-    }
+            if let Err(err) = barang_service.insert_barang(&barang_id, body).await {
+                return HttpResponse::InternalServerError().json(json!({
+                    "status":"error",
+                    "message": format!("{:?}", err)
+                }));
+            }
 
-    match barang_service.get_barang_by_id(&barang_id).await {
-        Ok(barang) => {
-            let response = BarangResponseDto {
-                status: "success".to_string(),
-                data: BarangData {
-                    barang: BarangModel::into(barang),
-                },
-            };
+            match barang_service.get_barang_by_id(&barang_id).await {
+                Ok(barang) => {
+                    let response = BarangResponseDto {
+                        status: "success".to_string(),
+                        data: BarangData {
+                            barang: BarangModel::into(barang),
+                        },
+                    };
 
-            HttpResponse::Ok().json(response)
+                    HttpResponse::Ok().json(response)
+                }
+                Err(e) => HttpResponse::InternalServerError().json(json!({
+                    "status": "error",
+                    "message": format!("{:?}", e)
+                })),
+            }
         }
-        Err(e) => HttpResponse::InternalServerError().json(json!({
-            "status": "error",
-            "message": format!("{:?}", e)
+        Err(e) => HttpResponse::BadRequest().json(json!({
+            "status":"fail",
+            "message": e,
         })),
     }
 }
@@ -99,4 +108,17 @@ pub async fn get_barang_handler(
             "message": format!("{:?}", e)
         })),
     }
+}
+
+pub async fn sync_barang_handler(
+    body: web::Json<SyncBarangSchema>,
+    data: web::Data<AppState>,
+) -> impl Responder {
+    let barang_service = BarangService::new(data.db.clone());
+
+    for barang in &body.barang {}
+
+    HttpResponse::Ok().json(json!({
+        "status": "success".to_string(),
+    }))
 }

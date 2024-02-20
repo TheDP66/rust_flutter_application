@@ -10,13 +10,12 @@ pub fn barang_config(conf: &mut web::ServiceConfig) {
     let scope = web::scope("/api/barang")
         .route(
             "",
-            web::get()
-                .to(get_barang_handler)
-                .wrap(RequireAuth::allowed_roles(vec![
-                    UserRole::User,
-                    UserRole::Moderator,
-                    UserRole::Admin,
-                ])),
+            web::get().to(get_barang_handler),
+            // .wrap(RequireAuth::allowed_roles(vec![
+            //     UserRole::User,
+            //     UserRole::Moderator,
+            //     UserRole::Admin,
+            // ])),
         )
         .route(
             "",
@@ -30,13 +29,12 @@ pub fn barang_config(conf: &mut web::ServiceConfig) {
         )
         .route(
             "/sync",
-            web::post()
-                .to(sync_barang_handler)
-                .wrap(RequireAuth::allowed_roles(vec![
-                    UserRole::User,
-                    UserRole::Moderator,
-                    UserRole::Admin,
-                ])),
+            web::post().to(sync_barang_handler),
+            // .wrap(RequireAuth::allowed_roles(vec![
+            //     UserRole::User,
+            //     UserRole::Moderator,
+            //     UserRole::Admin,
+            // ])),
         );
 
     conf.service(scope);

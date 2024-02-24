@@ -1,14 +1,44 @@
 version: '3'
-name: rust_flutter_application
+name: rust_app_api
 services:
+  api-rust:
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_MAXAGE: ${JWT_MAXAGE}
+      STORAGE_DIR: ${STORAGE_DIR}
+      PORT: ${PORT}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - rust_app_network
+    ports:
+      - "8090:8090"
+
   mysql:
-    image: mysql:latest
+    image: mysql:8.3.0
     container_name: rfa_mysql
     env_file:
       - ./.env
     ports:
-      - '6500:3306'
+      - "6500:3306"
     volumes:
       - rfa_mysql_volume:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    networks:
+      - rust_app_network
+
 volumes:
   rfa_mysql_volume:
+
+
+networks:
+  rust_app_network:

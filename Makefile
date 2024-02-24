@@ -1,5 +1,10 @@
 dev:
-	docker-compose up -d
+	docker-compose -f docker-compose.no_api.yml up -d
+
+dev-api:
+	make dev
+	cargo sqlx prepare
+	docker-compose -f docker-compose.yml up -d
 
 dev-down:
 	docker-compose down

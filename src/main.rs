@@ -74,6 +74,7 @@ impl Modify for SecurityAddon {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    openssl_probe::init_ssl_cert_env_vars();
     if std::env::var_os("RUST_LOG").is_none() {
         // ? actix_web = debug | info
         std::env::set_var("RUST_LOG", "actix_web=debug");
@@ -83,6 +84,8 @@ async fn main() -> std::io::Result<()> {
 
     // initialize env variable
     let config = Config::init().to_owned();
+
+    println!("{}", &config.database_url);
 
     // setup pool connection*
     let pool = match MySqlPoolOptions::new()
@@ -109,7 +112,7 @@ async fn main() -> std::io::Result<()> {
     let port = config.clone().port;
     println!(
         "{}",
-        format!("🚀 Server is running on port http://127.0.0.1:{}", port)
+        format!("🚀 Server is running on port http://localhost:{}", port)
     );
 
     let openapi = ApiDoc::openapi();
@@ -144,7 +147,7 @@ async fn main() -> std::io::Result<()> {
                 SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
             )
     })
-    .bind(("127.0.0.1", port))?;
+    .bind(("0.0.0.0", port))?;
 
     // run server
     server.run().await?;

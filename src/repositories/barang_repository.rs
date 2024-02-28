@@ -1,3 +1,4 @@
+extern crate chrono;
 use sqlx::{mysql::MySqlQueryResult, MySqlPool};
 
 use crate::{models::barang::BarangModel, schemas::barang::InsertBarangSchema};
@@ -17,7 +18,7 @@ pub async fn insert_barang(
     .bind(body.name.to_string())
     .bind(body.price)
     .bind(body.stock)
-    .bind(body.expired_at)
+    .bind(body.expired_at.clone())
     .execute(&pool)
     .await
     .map_err(|err: sqlx::Error| err.to_string());

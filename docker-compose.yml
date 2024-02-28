@@ -3,8 +3,10 @@ name: rust_app_api
 services:
   api-rust:
     restart: unless-stopped
+    env_file:
+      - ./.env.production
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL_DOCKER}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_MAXAGE: ${JWT_MAXAGE}
       STORAGE_DIR: ${STORAGE_DIR}
@@ -24,7 +26,12 @@ services:
     image: mysql:8.3.0
     container_name: rfa_mysql
     env_file:
-      - ./.env
+      - ./.env.production
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "6500:3306"
     volumes:

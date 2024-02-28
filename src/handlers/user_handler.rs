@@ -15,7 +15,6 @@ use serde_json::json;
     get,
     path = "/api/users/me",
     tag = "Users Endpoint",
-    request_body(content = (), description = "Return logged in user data"),
     responses(
         (status=201, description= "Logged in user detail", body= UserResponseDto ),
     ),

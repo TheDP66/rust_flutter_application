@@ -10,11 +10,11 @@ pub struct BarangDto {
     pub name: String,
     pub price: i32,
     pub stock: i32,
-    #[serde(rename = "expiredAt")]
+    // #[serde(rename = "expiredAt")]
     pub expired_at: Option<NaiveDate>,
-    #[serde(rename = "createdAt")]
+    // #[serde(rename = "createdAt")]
     pub created_at: Option<chrono::DateTime<chrono::Utc>>,
-    #[serde(rename = "updatedAt")]
+    // #[serde(rename = "updatedAt")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 

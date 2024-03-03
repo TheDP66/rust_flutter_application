@@ -32,6 +32,9 @@ RUN groupadd $APP_USER \
 
 COPY --from=builder /rust_flutter_application/target/release/rust_flutter_application ${APP}/rust_flutter_application
 
+# Copy storage folder with default.png
+COPY --from=builder /rust_flutter_application/storage ${APP}/storage
+
 RUN chown -R $APP_USER:$APP_USER ${APP}
 
 USER $APP_USER

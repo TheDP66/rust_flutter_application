@@ -6,7 +6,7 @@ services:
     env_file:
       - ./.env.production
     environment:
-      DATABASE_URL: ${DATABASE_URL_DOCKER}
+      DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_MAXAGE: ${JWT_MAXAGE}
       STORAGE_DIR: ${STORAGE_DIR}
@@ -17,6 +17,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    volumes:
+      - rfa_api_volume:/src/usr/app/storage
     networks:
       - rust_app_network
     ports:
@@ -45,6 +47,7 @@ services:
 
 volumes:
   rfa_mysql_volume:
+  rfa_api_volume:
 
 
 networks:

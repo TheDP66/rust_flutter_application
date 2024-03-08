@@ -1,3 +1,4 @@
+use redis::Client;
 use sqlx::MySqlPool;
 use utils::config::Config;
 
@@ -13,4 +14,5 @@ pub mod utils;
 pub struct AppState {
     pub db: MySqlPool,
     pub config: Config,
+    pub redis_client: Client,
 }

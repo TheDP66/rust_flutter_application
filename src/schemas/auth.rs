@@ -37,3 +37,9 @@ pub struct LoginUserSchema {
     )]
     pub password: String,
 }
+
+#[derive(Validate, Debug, Default, Clone, Serialize, Deserialize, ToSchema)]
+pub struct RefreshTokenSchema {
+    #[validate(length(min = 1, message = "Refresh token is required"))]
+    pub refresh_token: String,
+}

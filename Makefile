@@ -25,19 +25,4 @@ server-up:
 	ngrok http 8090
 
 install:
-	cargo add actix-web
-	cargo add actix-cors
-	cargo add serde --features derive
-	cargo add serde_json
-	cargo add chrono --features serde
-	cargo add env_logger
-	cargo add dotenv
-	cargo add argon2
-	cargo add jsonwebtoken
-	cargo add validator -F derive
-	cargo add uuid --features "serde v4"
-	cargo add sqlx --features "runtime-async-std-native-tls mysql chrono uuid"
-	cargo install cargo-watch
-	cargo install sqlx-cli
-	cargo add utoipa -F "chrono actix_extras"
-	cargo add utoipa-swagger-ui -F actix-web
+	cargo install cargo-watch sqlx-cli

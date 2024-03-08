@@ -4,7 +4,7 @@ name: rust_flutter_application
 services:
   mysql:
     image: mysql:8.3.0
-    container_name: rfa_dev_mysql
+    container_name: rfa_mysql_db
     env_file:
       - ./.env
     environment:
@@ -16,5 +16,13 @@ services:
       - '6500:3306'
     volumes:
       - rfa_mysql_volume:/var/lib/mysql
+  redis:
+    image: redis:alpine3.17
+    container_name: rfa_redis_db
+    ports:
+      - '6379:6379'
+    volumes:
+      - rfa_redis_volume:/data
 volumes:
   rfa_mysql_volume:
+  rfa_redis_volume:

@@ -3,6 +3,8 @@ use utoipa::ToSchema;
 
 use crate::models::user::{UserModel, UserRole};
 
+use super::token::TokenData;
+
 #[derive(Debug, Serialize, Deserialize, Clone, ToSchema)]
 pub struct UserDto {
     pub id: String,
@@ -73,9 +75,4 @@ pub struct UserRegisterResponseDto {
 pub struct UserLoginResponseDto {
     pub status: String,
     pub data: TokenData,
-}
-
-#[derive(Debug, Serialize, Deserialize, ToSchema)]
-pub struct TokenData {
-    pub token: String,
 }

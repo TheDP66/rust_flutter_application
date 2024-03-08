@@ -1,14 +1,13 @@
 use actix_cors::Cors;
 use actix_web::{http::header, middleware::Logger, web, App, HttpResponse, HttpServer, Responder};
 use dotenv::dotenv;
+use redis::Client;
 use rust_flutter_application::{
     dtos::{
         barang::{BarangData, BarangDto, BarangResponseDto, BarangsData, BarangsResponseDto},
         global::Response,
-        user::{
-            TokenData, UserData, UserDto, UserLoginResponseDto, UserRegisterResponseDto,
-            UserResponseDto,
-        },
+        token::TokenData,
+        user::{UserData, UserDto, UserLoginResponseDto, UserRegisterResponseDto, UserResponseDto},
     },
     handlers,
     models::user::UserRole,
@@ -85,8 +84,6 @@ async fn main() -> std::io::Result<()> {
     // initialize env variable
     let config = Config::init().to_owned();
 
-    println!("{}", &config.database_url);
-
     // setup pool connection*
     let pool = match MySqlPoolOptions::new()
         .max_connections(10)
@@ -100,6 +97,18 @@ async fn main() -> std::io::Result<()> {
         Err(err) => {
             eprintln!("🔥 Failed to connect to the database: {:?}", err);
             std::process::exit(1)
+        }
+    };
+
+    // setup redis connection
+    let redis_client = match Client::open(config.redis_url.to_owned()) {
+        Ok(client) => {
+            println!("✅ Connection to the redis is successful!");
+            client
+        }
+        Err(e) => {
+            println!("🔥 Error connecting to Redis: {}", e);
+            std::process::exit(1);
         }
     };
 
@@ -135,6 +144,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(AppState {
                 db: pool.clone(),
                 config: config.clone(),
+                redis_client: redis_client.clone(),
             }))
             .wrap(cors)
             .wrap(Logger::default())

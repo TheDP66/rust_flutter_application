@@ -1,7 +1,6 @@
+use crate::{repositories::auth_repository, schemas::auth::RegisterUserSchema};
 use actix_web::web::Json;
 use sqlx::{mysql::MySqlQueryResult, MySqlPool};
-
-use crate::{repositories::auth_repository, schemas::auth::RegisterUserSchema};
 
 #[derive(Debug)]
 pub struct AuthService {

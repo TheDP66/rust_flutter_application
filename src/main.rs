@@ -60,7 +60,7 @@ impl Modify for SecurityAddon {
     fn modify(&self, openapi: &mut utoipa::openapi::OpenApi) {
         let components = openapi.components.as_mut().unwrap();
         components.add_security_scheme(
-            "token",
+            "access_token",
             SecurityScheme::Http(
                 HttpBuilder::new()
                     .scheme(HttpAuthScheme::Bearer)
@@ -73,7 +73,7 @@ impl Modify for SecurityAddon {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    openssl_probe::init_ssl_cert_env_vars();
+    // openssl_probe::init_ssl_cert_env_vars();
     if std::env::var_os("RUST_LOG").is_none() {
         // ? actix_web = debug | info
         std::env::set_var("RUST_LOG", "actix_web=debug");

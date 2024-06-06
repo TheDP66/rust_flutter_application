@@ -19,7 +19,7 @@ pub fn user_config(conf: &mut web::ServiceConfig) {
         )
         .route(
             "/me",
-            web::post()
+            web::patch()
                 .to(update_photo_handler)
                 .wrap(RequireAuth::allowed_roles(vec![
                     UserRole::User,

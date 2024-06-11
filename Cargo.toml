@@ -21,6 +21,7 @@ futures-util = "0.3.30"
 genpdf = { version = "0.2.0", features = ["images"] }
 image = "0.25.1"
 jsonwebtoken = "9.2.0"
+printpdf = { version = "0.7.0", features = ["embedded_images"] }
 # openssl = { version = "0.10.64", features = ["vendored"] }
 # openssl-probe = "0.1.5"
 redis = { version = "0.24.0", features = ["tokio-comp"] }

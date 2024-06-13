@@ -49,3 +49,18 @@ pub async fn get_genpdf_handler(data: Data<AppState>, mut payload: Multipart) ->
         .insert_header(ContentDisposition::attachment("genpdf.pdf"))
         .body(buffer)
 }
+
+pub async fn get_typst_handler(data: Data<AppState>, mut payload: Multipart) -> impl Responder {
+    let response_data = Response {
+        status: "success",
+        message: "Success".to_string(),
+    };
+
+    let pdf_service = PdfService::new(data.db.clone());
+
+    let filename = "test-report2".to_string();
+
+    pdf_service.generate_typst_service().await;
+
+    HttpResponse::Ok().json(response_data)
+}

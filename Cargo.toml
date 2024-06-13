@@ -14,6 +14,7 @@ argon2 = "0.5.3"
 async-trait = "0.1.77"
 base64 = "0.22.0"
 chrono = { version = "0.4.31", features = ["serde"] }
+comemo = "0.4.0"
 dotenv = "0.15.0"
 env_logger = "0.11.0"
 futures = "0.3.30"
@@ -34,7 +35,17 @@ sqlx = { version = "0.7.3", features = [
     "chrono",
     "uuid",
 ] }
+tar = "0.4.41"
+time = "0.3.36"
+ttf-parser = "0.21.1"
+typst = "0.11.1"
+typst-pdf = "0.11.1"
+ureq = "2.9.7"
 utoipa = { version = "4.2.0", features = ["chrono", "actix_extras"] }
 utoipa-swagger-ui = { version = "6.0.0", features = ["actix-web"] }
 uuid = { version = "1.7.0", features = ["serde", "v4"] }
 validator = { version = "0.16.1", features = ["derive"] }
+zune-inflate = { version = "0.2.54", default_features = false, features = [
+  "gzip",
+  "std",
+] }

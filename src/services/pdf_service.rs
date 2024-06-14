@@ -45,18 +45,87 @@ impl PdfService {
     }
 
     pub async fn generate_typst_service(&self) -> () {
-        let content = r#"
-#import "@preview/polylux:0.3.1": *
-#import themes.simple: *
+        let detail_font_size = "8pt".to_owned();
 
-#set page(paper: "presentation-16-9")
+        let title = "BUKTI PENERIMAAN BANK BCA (2264100550)".to_owned();
+        let voucher_number = "B011.2024.01.0181".to_owned();
+        let voucher_date = "31 / 01 / 2024".to_owned();
 
-#show: simple-theme.with()
+        let content = format!(
+            r#"
+            #import table: cell, header
+            
+            #set raw(tab-size: 8)
+            
+            #set page(
+                width: 24cm, 
+                height: 14cm,
+                margin: (
+                    x: 1.4cm,
+                    top: 6.5cm,
+                    bottom: 1.67cm,
+                ),
+                header-ascent: 0%,
+                header: [
+                    #stack(
+                        dir: ltr,
+                        stack(
+                            dir: ttb,
+                            text(15pt, weight: "bold")[{title}],
+                            v(0.41cm),
+                            image("assets/images/Powered by Codein.jpg", height: 0.64cm),
+                        ),
+                        h(1fr),
+                        align(
+                            top + right,
+                            image("assets/images/Logo IKT.jpg", width: 6.16cm),
+                        ),
+                    )
+                    #place(
+                        dx: -1.65cm,
+                        dy: 0cm,
+                        line(
+                            length: 14cm,
+                            stroke: (paint: rgb(46, 164, 73), thickness: 0.3cm, cap: "round")
+                        )
+                    )
+                    #place(
+                        dx: 14.8cm,
+                        dy: -0.3cm,
+                        table(
+                            columns: 2,
+                            stroke: none,
+                            cell(text({detail_font_size})[Nomor Voucher]),
+                            cell(text({detail_font_size})[: {voucher_number}]),
+                            cell(text({detail_font_size})[Tanggal]),
+                            cell(text({detail_font_size})[: {voucher_date}]),
+                        )
+                    )
+                    #v(0.7cm)
+                    #table(
+                        columns: 2,
+                        stroke: none,
+                        cell(text({detail_font_size})[Divisi]),
+                        cell(text({detail_font_size})[: Finance (Debitur - Kasir - Kas Kol)]),
+                        cell(text({detail_font_size})[Count Print]),
+                        cell(text({detail_font_size})[: 2 Kali]),
+                        cell(text({detail_font_size})[Dengan ini diterima dana sebesar]),
+                        cell(text({detail_font_size})[: Rp 54.470.000]),
+                        cell(text({detail_font_size})[Keterangan]),
+                        cell(text({detail_font_size})[: spr0050]),
+                    )
+                    #v(0.78cm)
+                ],
+                numbering: "1 of 1",
+            )
 
-#title-slide[
-= Hello, World!
-A document (+ `polylux` library) rendered with `Typst`!
-]"#
+            #lorem(500)
+        "#,
+            title = title,
+            detail_font_size = detail_font_size,
+            voucher_number = voucher_number,
+            voucher_date = voucher_date,
+        )
         .to_owned();
         // Create world with content.
         let world = TypstWrapperWorld::new("./".to_owned(), content);

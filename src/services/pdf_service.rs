@@ -50,12 +50,17 @@ impl PdfService {
         let title = "BUKTI PENERIMAAN BANK BCA (2264100550)".to_owned();
         let voucher_number = "B011.2024.01.0181".to_owned();
         let voucher_date = "31 / 01 / 2024".to_owned();
-
+        
+        // ? https://typst.app/docs/guides/table-guide/
         let content = format!(
             r#"
-            #import table: cell, header
+            #import table: cell, header, hline, vline
             
             #set raw(tab-size: 8)
+            #show cell: it => {{
+                set text(size: {detail_font_size})
+                it
+            }}
             
             #set page(
                 width: 24cm, 
@@ -95,10 +100,10 @@ impl PdfService {
                         table(
                             columns: 2,
                             stroke: none,
-                            cell(text({detail_font_size})[Nomor Voucher]),
-                            cell(text({detail_font_size})[: {voucher_number}]),
-                            cell(text({detail_font_size})[Tanggal]),
-                            cell(text({detail_font_size})[: {voucher_date}]),
+                            [Nomor Voucher],
+                            [: {voucher_number}],
+                            [Tanggal FPD],
+                            [: {voucher_date}],
                         )
                     )
                     #v(0.7cm)
@@ -114,12 +119,140 @@ impl PdfService {
                         cell(text({detail_font_size})[Keterangan]),
                         cell(text({detail_font_size})[: spr0050]),
                     )
-                    #v(0.78cm)
+                    #v(0.7cm)
                 ],
                 numbering: "1 of 1",
             )
 
-            #lorem(500)
+            #table(
+                stroke: none,
+                fill: (x, y) => if y == 0 {{ rgb(46, 164, 73) }},
+                columns: (auto, 2fr, 1fr, 2fr, 1fr),
+                inset: (y: 0.32cm, x: 0.5cm),
+                header(
+                    repeat: true,
+                    text(white)[No.], text(white)[Keterangan], text(white)[Kode A/C], text(white)[Deskripsi], cell(align: right)[#text(white)[Nilai]],
+                ),
+                vline(x: 0, start: 1, stroke: rgb(141, 153, 179)),
+                vline(x: 5, start: 1, stroke: rgb(141, 153, 179)),
+                [1.], [spr0050], [1.    1.1.201.100], [Piutang Usaha - Pihak Berelasi], cell(align: right)[Rp 57.470.250],
+                hline(stroke: rgb(141, 153, 179))
+            )
+            #v(0.7cm)
+
+            #stack(
+                dir: ltr,
+                text(8pt)[Diterima dengan],
+                align(right)[#text(8pt)[Total Nilai :]],
+                align(right)[#h(0.85cm)],
+                align(right)[#text(8pt)[Rp 57.470.250]],
+                align(right)[#h(0.5cm)],
+            )
+            
+            #stack(
+                dir: ltr,
+                rect(width: 1.2cm, height: 0.53cm, stroke: rgb(46, 164, 73)),
+                h(0.24cm),
+                align(left + horizon)[#text(8pt)[Giro Bilyet]]
+            )
+
+            #place(
+                dx: 6.28cm,
+                dy: -1.2cm,
+                block(
+                    inset: 0.41cm,
+                    stroke: rgb(46, 164, 73),
+                    width: 6.84cm,
+                    breakable: false,
+                    text(8pt)[Terbilang, \ 
+                    Lima Puluh Tujuh Juta Empat Ratus Tujuh Puluh Ribu Dua Ratus Lima Puluh]
+                )
+            )
+
+            #align(right)[#block(
+                stroke: none,
+                breakable: false,
+                stack(
+                    dir: ltr,
+                    align(right)[
+                        #box(
+                            height: 2.35cm,
+                            width: 2.71cm,
+                            stack(
+                                dir: ttb,
+                                align(center + top)[#text(8pt)[Admin AR,]],
+                                align(center + bottom)[
+                                    #stack(
+                                        dir: ltr,
+                                        text(8pt)[(],
+                                        underline[#h(2.55cm)],
+                                        text(8pt)[)],
+                                    )
+                                ]
+                            )
+                        )
+                    ],
+                    h(0.37cm),
+                    align(right)[
+                        #box(
+                            height: 2.35cm,
+                            width: 2.71cm,
+                            stack(
+                                dir: ttb,
+                                align(center + top)[#text(8pt)[SPV Finance,]],
+                                align(center + bottom)[
+                                    #stack(
+                                        dir: ltr,
+                                        text(8pt)[(],
+                                        underline[#h(2.55cm)],
+                                        text(8pt)[)],
+                                    )
+                                ]
+                            )
+                        )
+                    ],
+                    h(0.37cm),
+                    align(right)[
+                        #box(
+                            height: 2.35cm,
+                            width: 2.71cm,
+                            stack(
+                                dir: ttb,
+                                align(center + top)[#text(8pt)[Manager Finance \ 
+                                Accounting & Tax,]],
+                                align(center + bottom)[
+                                    #stack(
+                                        dir: ltr,
+                                        text(8pt)[(],
+                                        underline[#h(2.55cm)],
+                                        text(8pt)[)],
+                                    )
+                                ]
+                            )
+                        )
+                    ],
+                    h(0.37cm),
+                    align(right)[
+                        #box(
+                            height: 2.35cm,
+                            width: 2.71cm,
+                            stack(
+                                dir: ttb,
+                                align(center + top)[#text(8pt)[Kasir,]],
+                                align(center + bottom)[
+                                    #stack(
+                                        dir: ltr,
+                                        text(8pt)[(],
+                                        underline[#h(2.55cm)],
+                                        text(8pt)[)],
+                                    )
+                                ]
+                            )
+                        )
+                    ],
+                )
+            )
+            ]
         "#,
             title = title,
             detail_font_size = detail_font_size,
